@@ -2,6 +2,7 @@
 export enum ViewMode {
   SIDE = 'SIDE',
   FRONT = 'FRONT',
+  TOP = 'TOP',
   SPLIT = 'SPLIT'
 }
 
@@ -92,6 +93,8 @@ export interface LockState {
   pickPosition: Vector2; // Current pick tip position in world space
   isUnlocked: boolean;
   shackleOffset: number;
+  isKeyInserted?: boolean;
+  keyInsertProgress?: number;
 }
 
 export interface GameConfig {

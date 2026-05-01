@@ -99,7 +99,7 @@ export const COLORS = {
 export const DIMENSIONS = {
   pinWidth: 26, 
   pinSpacing: 48,
-  pinMaxLift: 80,
+  pinMaxLift: 50,
   lockWidth: 320,
   lockHeight: 160,
   shackleThickness: 25,

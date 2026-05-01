@@ -21,7 +21,13 @@ export class AudioService {
     }
   }
 
-  private triggerHaptic(durationMs: number | number[]) {
+  public pause() {
+    if (this.ctx && this.ctx.state === 'running') {
+      this.ctx.suspend();
+    }
+  }
+
+  public triggerHaptic(durationMs: number | number[]) {
       if (typeof navigator !== 'undefined' && navigator.vibrate) {
           try {
               navigator.vibrate(durationMs);
