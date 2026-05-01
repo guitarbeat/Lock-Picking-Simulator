@@ -1,0 +1,6 @@
+{
+  "name": "Lock Pick Sim",
+  "description": "Interactive interactive lock picking simulator utilizing hand tracking.",
+  "requestFramePermissions": ["camera"],
+  "majorCapabilities": []
+}
