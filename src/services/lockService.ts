@@ -119,6 +119,7 @@ export class LockService {
 
     this.state.pickPosition = { x: worldPickX, y: worldPickY };
     this.state.totalTorque = input.tensionTorque;
+    audioService.playScrape(this.state.totalTorque);
 
     // --- PHYSICS LOOP ---
 
@@ -240,7 +241,10 @@ export class LockService {
                    audioService.playClick(800); // False set click
                }
            } else if (pin.currentLift > setPoint + tolerance) {
-               pin.state = PinState.OVERSET;
+               if (pin.state !== PinState.OVERSET) {
+                   pin.state = PinState.OVERSET;
+                   audioService.playOverset();
+               }
            }
         } else if (pin.state === PinState.SET || pin.state === PinState.FALSE_SET) {
             if (input.tensionTorque < 0.1) {

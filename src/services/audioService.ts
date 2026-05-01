@@ -97,9 +97,33 @@ export class AudioService {
     osc.stop(this.ctx.currentTime + 0.11);
   }
 
+  // Intense buzz for oversetting
+  public playOverset() {
+    this.triggerHaptic([50, 50, 50, 50]);
+    if (!this.ctx || !this.masterGain) return;
+
+    const osc = this.ctx.createOscillator();
+    const gain = this.ctx.createGain();
+
+    osc.type = 'sawtooth';
+    osc.frequency.setValueAtTime(150, this.ctx.currentTime);
+    osc.frequency.linearRampToValueAtTime(100, this.ctx.currentTime + 0.2);
+
+    gain.gain.setValueAtTime(0.4, this.ctx.currentTime);
+    gain.gain.exponentialRampToValueAtTime(0.01, this.ctx.currentTime + 0.2);
+
+    osc.connect(gain);
+    gain.connect(this.masterGain);
+
+    osc.start();
+    osc.stop(this.ctx.currentTime + 0.25);
+  }
+
   // Tension scrape sound (white noise)
   public playScrape(intensity: number) {
-    // Implementation simplified for brevity; normally uses AudioBuffer with noise
+    if (intensity > 0.8) {
+      this.triggerHaptic(10);
+    }
   }
 
   // Success sound when lock opens

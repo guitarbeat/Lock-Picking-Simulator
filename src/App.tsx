@@ -22,6 +22,7 @@ const App: React.FC = () => {
   const [inputMethod, setInputMethod] = useState<'MOUSE_KEYBOARD' | 'CAMERA' | 'GYRO'>('MOUSE_KEYBOARD');
   const [showCameraFeed, setShowCameraFeed] = useState<boolean>(true);
   const [showGuide, setShowGuide] = useState<boolean>(false);
+  const [deviceParallax, setDeviceParallax] = useState({ x: 0, y: 0 });
 
     
   const manualInputRef = useRef({ active: false, x: 0.8, y: 0.5, torque: 0, isMouseDown: false, touchStartX: 0, touchStartY: 0, pickStartX: 0, pickStartY: 0, pointerId: -1 });
@@ -227,14 +228,24 @@ const App: React.FC = () => {
   
   const handleDeviceOrientation = (e: DeviceOrientationEvent) => {
       if (gameState !== GameState.PLAYING) return;
-      if (e.gamma === null) return;
       
+      const gamma = e.gamma || 0;
+      const beta = e.beta || 0;
+      
+      // Update visual parallax
+      // map gamma (-90 to 90) to roughly +/- 15 degrees
+      // map beta (-180 to 180) to roughly +/- 15 degrees
+      setDeviceParallax({ 
+          x: Math.min(15, Math.max(-15, (gamma / 90) * 15)), 
+          y: Math.min(15, Math.max(-15, ((beta - 45) / 90) * 15)) 
+      });
+
       manualInputRef.current.active = true;
       
       // Gamma (left/right tilt) from -90 to 90
       // Let's use tilting device right (positive gamma) to apply tension
       // Neutral is around 0. Full tension at ~40 degrees
-      let tilt = Math.max(0, Math.min(40, e.gamma || 0));
+      let tilt = Math.max(0, Math.min(40, gamma));
       manualInputRef.current.torque = tilt / 40.0;
   };
 
@@ -392,7 +403,9 @@ const App: React.FC = () => {
         )}
 
         {/* Main Canvas */}
-        <GameCanvas gameState={lockState} currentPick={currentPick} viewMode={ViewMode.SPLIT} />
+        <div style={{ transform: gameState === GameState.PLAYING ? `perspective(1000px) rotateX(${deviceParallax.y}deg) rotateY(${deviceParallax.x}deg)` : 'none', transition: 'transform 0.1s ease-out' }} className="w-full h-full">
+            <GameCanvas gameState={lockState} currentPick={currentPick} viewMode={ViewMode.SPLIT} />
+        </div>
 
         {/* UI Overlay for Playing State */}
         {gameState === GameState.PLAYING && (
